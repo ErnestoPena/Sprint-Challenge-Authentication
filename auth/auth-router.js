@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const db = require('../database/dbUsers');
 const authmiddleware = require('./authenticate-middleware');
 
+
+//POST to registration
 router.post('/register', async (req, res) => {
     const newuserName = req.body;
     
@@ -29,6 +31,8 @@ router.post('/register', async (req, res) => {
     }
 });
 
+
+//POST to login
 router.post('/login' , authmiddleware.createCookie, async (req, res) => {
     try {
       res.status(200).json({message:`Welcome ${req.params.username}`})

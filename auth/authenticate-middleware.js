@@ -24,8 +24,7 @@ const bcrypt = require('bcrypt');
         const [user] = await db.findByUsername(username);
 
         if (user && bcrypt.compareSync(password , user.password)) {
-          console.log(user)
-          //req.session.user = user.username;
+          req.session.user = user.username;
           req.params.username = user.username
           next();
         } else {
