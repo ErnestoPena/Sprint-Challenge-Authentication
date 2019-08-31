@@ -2,7 +2,7 @@ const session = require('express-session');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-
+const db = require('../database/dbUsers')
 
 const authenticate = require('../auth/authenticate-middleware.js');
 const authRouter = require('../auth/auth-router.js');
@@ -17,7 +17,7 @@ server.use(cors());
 
 
 server.use('/api/auth', authRouter);
-server.use('/api/jokes', authenticate, jokesRouter);
+//server.use('/api/jokes', authenticate, jokesRouter);
 
 sessionOptions = {
     name: "sprintCookie",
@@ -42,8 +42,18 @@ sessionOptions = {
 server.use(session(sessionOptions));
 
 server.get('/' , (req, res) => {
-    res.send('<h1>Ernesto Pena => Authentication Sprint</h1>')
+    res.status(200).json({Ernesto_Pena: '=> Authentication Sprint'})
 })
+
+server.get('/users', async (req,res) => {
+    try {
+        const getall = await db.find();
+      res.status(200).json(getall);
+    }
+    catch (err) {
+      res.status(500).json(err.message)
+    }
+  })
 
 
 module.exports = server;

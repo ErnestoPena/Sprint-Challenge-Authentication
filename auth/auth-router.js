@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const db = require('../database/dbUsers');
-
+const authmiddleware = require('./authenticate-middleware');
 
 router.post('/register', async (req, res) => {
     const newuserName = req.body;
@@ -29,28 +29,23 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.post('/login', async (req, res) => {
-  const credentials = req.body;
-    
+router.post('/login' , authmiddleware.createCookie, async (req, res) => {
     try {
-      if(credentials.username && credentials.password) {
-        const [user] = await db.findByUsername(credentials.username);
-
-        console.log(user)
-        
-        if (user && bcrypt.compareSync(credentials.password , user.password)) {
-          req.session.user = user;
-          res.status(200).json({message:`Welcome ${user.username}`})
-        } else {
-          res.status(500).json({message: "Invalid credentials"})
-        }
-      } else {
-        res.status(403).json({message: 'Provide credentials to login'})
-      }
+      res.status(200).json({message:`Welcome ${req.params.username}`})
     }
     catch (err) {
       res.status(500).json(err.message);
     }
 });
+
+router.get('/users', async (req,res) => {
+  try {
+      const getall = await db.find();
+    res.status(200).json(getall);
+  }
+  catch (err) {
+    res.status(500).json(err.message)
+  }
+})
 
 module.exports = router;
